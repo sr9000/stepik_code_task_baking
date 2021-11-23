@@ -1,7 +1,6 @@
 from impl.private._params import params, ds2str
 from impl.private._tag import dataset
 
-XXX, (YYY, ZZZ) = 1, (2,3)
 
 @dataset
 def particular():
