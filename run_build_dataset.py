@@ -1,8 +1,8 @@
 import logging as log
 from pathlib import Path
 
-from extra.introspection import collect_datasets
 from extra.helper import clear_dir
+from extra.introspection import collect_datasets
 from extra.solve_caller import call_solve
 from impl.private._stdio import stdio
 from impl.solver import input_reader, solver as solve

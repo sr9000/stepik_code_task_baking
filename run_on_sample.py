@@ -2,8 +2,8 @@ import logging as log
 from pathlib import Path
 
 from extra.solve_caller import call_solve
-from impl.private._stdio import stdio
 from impl.checker import output_reader, checker as check
+from impl.private._stdio import stdio
 from impl.solver import input_reader, solver as solve
 
 
