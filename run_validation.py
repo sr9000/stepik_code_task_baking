@@ -11,6 +11,14 @@ class ValidationException(Exception):
     pass
 
 
+class AbsolutelyWrongException(ValidationException):
+    pass
+
+
+class PartiallyCorrectException(ValidationException):
+    pass
+
+
 def main():
     log.info('collect_datasets')
     datasets = collect_datasets()
@@ -42,21 +50,27 @@ def main():
     readed_wrsl = list(wrong_reading_solutions(wrsolved_ds))
     log.info('wrong solutions is readable')
 
-    # wrong solutions fail at least one check
+    # wrong solutions fail at least one check (but also should pass at least one)
     assert_wrong_solutions(readed_ds, readed_sl, readed_wrsl)
-    log.info('wrong solutions fail at least one check')
+    log.info('wrong solutions give representative feedback')
 
 
 def assert_wrong_solutions(readed_ds, readed_sl, readed_wrsl):
     for wrname, wrans in readed_wrsl:
         try:
             assert_solutions(readed_ds, readed_sl, wrans)
-        except Exception:
+        except PartiallyCorrectException:
             # expect exception from checking
             pass
+        except AbsolutelyWrongException:
+            # shit, this wrong solution is absolute garbage
+            raise ValidationException(f'Wrong solution "{wrname}" did not pass any test, but should.')
+        except Exception as e:
+            # something goes wrong
+            raise ValidationException(f'Wrong solution "{wrname}" goes bad with check.') from e
         else:
             # shit, we didnt catch wrong solution
-            raise ValidationException(f'Wrong solution "{wrname}" passes all tests')
+            raise ValidationException(f'Wrong solution "{wrname}" passed all tests, but should fail at least one.')
 
 
 def wrong_reading_solutions(wrsolved_ds):
@@ -79,13 +93,27 @@ def assert_solutions(readed_ds, readed_sl, answered_sl=None):
     if answered_sl is None:
         answered_sl = readed_sl
 
+    correct = 0
+    wrong = 0
+    first_error = None
+    first_full_name = ''
+
     for (full_name1, indata), (full_name2, outdata), (full_name3, ansdata) in zip(readed_ds, readed_sl, answered_sl):
         assert full_name1 == full_name2, f'Checking solutions on different names'
         assert full_name1 == full_name3, f'Checking solutions on different names'
         try:
             check(indata, outdata, ansdata)
+            correct += 1
         except Exception as e:
-            raise ValidationException(f'Failed to check solution {full_name1}') from e
+            wrong += 1
+            if first_error is None:
+                first_error = e
+                first_full_name = full_name1
+
+    if not correct:
+        raise AbsolutelyWrongException(f'Failed to check solution {first_full_name}') from first_error
+    elif wrong:
+        raise PartiallyCorrectException(f'Failed to check solution {first_full_name}') from first_error
 
 
 def reading_solutions(solved_ds):
@@ -131,3 +159,4 @@ if __name__ == '__main__':
         while cause:
             log.error(str(cause), exc_info=False)
             cause = cause.__cause__
+        quit(-1)

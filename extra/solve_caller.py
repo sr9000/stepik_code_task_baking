@@ -1,4 +1,4 @@
-from typing import Iterable as ABCIterable
+from collections.abc import Iterable as ABCIterable
 
 
 def call_solve(solve, input):
