@@ -1,7 +1,7 @@
-from impl.private._stdio import stdio
-from extra.solve_caller import call_solve
-from impl.solver import input_reader, solver
-from impl.checker import output_reader, checker
+from pre_definition.stdio import stdio
+from pre_definition.solve_caller import call_solve
+from implementation.solver import input_reader, solver
+from implementation.checker import output_reader, checker
 
 
 def generator():

@@ -3,8 +3,8 @@ from itertools import product
 from random import Random
 from typing import List, Tuple, Iterable
 
-from impl.private._stdio import stdio
-from impl.private._tag import dataset
+from pre_definition.stdio import stdio
+from pre_definition.tag import dataset
 
 
 def ds2str(ds):

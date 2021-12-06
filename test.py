@@ -1,5 +1,5 @@
-import impl.private._params as params
-import impl.private._stdio as stdio
+import pre_definition.params as params
+import pre_definition.stdio as stdio
 import pytest
 import re
 import sys

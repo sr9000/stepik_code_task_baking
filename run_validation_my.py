@@ -1,9 +1,9 @@
 import logging as log
 
 from extra.introspection import collect_datasets
-from extra.solve_caller import call_solve
-from impl.private._stdio import stdio
-from impl.solver import solver, input_reader
+from pre_definition.solve_caller import call_solve
+from pre_definition.stdio import stdio
+from implementation.solver import solver, input_reader
 from my import generate, check, solve
 
 

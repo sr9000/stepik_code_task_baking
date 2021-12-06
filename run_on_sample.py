@@ -1,10 +1,10 @@
 import logging as log
 from pathlib import Path
 
-from extra.solve_caller import call_solve
-from impl.checker import output_reader, checker as check
-from impl.private._stdio import stdio
-from impl.solver import input_reader, solver as solve
+from pre_definition.solve_caller import call_solve
+from implementation.checker import output_reader, checker as check
+from pre_definition.stdio import stdio
+from implementation.solver import input_reader, solver as solve
 
 
 def main():
@@ -78,7 +78,7 @@ def match_samples(ins, outs):
 def collect_samples():
     ins = dict()
     outs = dict()
-    for f in Path('sample').iterdir():
+    for f in Path('implementation/sample').iterdir():
         if not f.is_file():
             continue
         if f.match('*.in'):

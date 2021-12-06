@@ -1,10 +1,10 @@
 import logging as log
 
 from extra.introspection import collect_datasets, collect_wrong_solutions
-from extra.solve_caller import call_solve
-from impl.checker import output_reader, checker as check
-from impl.private._stdio import stdio
-from impl.solver import input_reader, solver as solve
+from pre_definition.solve_caller import call_solve
+from implementation.checker import output_reader, checker as check
+from pre_definition.stdio import stdio
+from implementation.solver import input_reader, solver as solve
 
 
 class ValidationException(Exception):
