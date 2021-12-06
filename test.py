@@ -225,7 +225,7 @@ def test_convert_params_assert_iterable():
 
 
 def test_convert_params_assert_tuple_size():
-    m = 'Second part of tuple in `params[1]` should be a collection of tuples size 2!'
+    m = 'Second part of tuple in `params[1]` should be a collection of tuples size 2 or dict with exact keys!'
 
     with pytest.raises(AssertionError, match=re.escape(m)):
         params.convert_params([('a', [1]), ('b,d', [(1,)]), ('c', [3])])
@@ -319,8 +319,8 @@ def test_gen_all():
 
 def test_gen_n():
     ps = [{'a': 1, 'b': 2}, {'a': 2, 'b': 3}, {'a': 3, 'b': 4}, {'a': 4, 'b': 5}, {'a': 5, 'b': 6}]
-    r = to_strendl([2, 6, 12])
-    assert list(params.gen_n(ps, n=3)(lambda a, b: print(a * b))()) == r
+    r = to_strendl([20, 6, 12])
+    assert list(params.gen_n(ps, n=3, seed=42)(lambda a, b: print(a * b))()) == r
 
 
 def test_gen_sample():
@@ -329,11 +329,11 @@ def test_gen_sample():
 
     ps = [{'a': 1, 'b': 2}, _6, _12, {'a': 4, 'b': 5}, {'a': 5, 'b': 6}]
     r = to_strendl([20, 6, 12])
-    assert list(params.gen_sample(ps, sample=0.6)(lambda a, b: print(a * b))()) == r
+    assert list(params.gen_sample(ps, sample=0.6, seed=42)(lambda a, b: print(a * b))()) == r
 
     ps = [{'a': 1, 'b': 2}, _12, _6, {'a': 4, 'b': 5}, {'a': 5, 'b': 6}]
     r = to_strendl([20, 12, 6])
-    assert list(params.gen_sample(ps, sample=0.6)(lambda a, b: print(a * b))()) == r
+    assert list(params.gen_sample(ps, sample=0.6, seed=42)(lambda a, b: print(a * b))()) == r
 
 
 def test_params_not_allowed():
@@ -376,7 +376,7 @@ def test_params_gen_all():
 
 def test_params_gen_n():
     ps = [('a,b', [(1, 2), (2, 3), (3, 4), (4, 5), (5, 6)])]
-    r = to_strendl([2, 6, 12])
+    r = to_strendl([20, 6, 12])
     assert list(params.params(ps, n=3)(lambda a, b: print(a * b))()) == r
 
 
