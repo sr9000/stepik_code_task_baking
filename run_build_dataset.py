@@ -4,7 +4,7 @@ from pathlib import Path
 from extra.helper import clear_dir
 from extra.introspection import collect_datasets
 from implementation.solver import input_reader, solver as solve
-from pre_definition.solve_caller import call_solve
+from pre_definition.solve_caller import call_with_args
 from pre_definition.stdio import stdio
 
 
@@ -64,7 +64,7 @@ def solve_file(input_file: Path):
     output_file = input_file.with_suffix('.out')
 
     with stdio(output=output_file.open('w')):
-        call_solve(solve, input)
+        call_with_args(solve, input)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,10 @@
 from collections.abc import Iterable as ABCIterable
 
 
-def call_solve(solve, input):
-    if isinstance(input, dict):
-        solve(**input)
-    elif isinstance(input, ABCIterable):
-        solve(*input)
+def call_with_args(func, args):
+    if isinstance(args, dict):
+        return func(**args)
+    elif isinstance(args, ABCIterable):
+        return func(*args)
     else:
-        solve(input)
+        return func(args)

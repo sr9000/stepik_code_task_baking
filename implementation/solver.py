@@ -4,6 +4,10 @@ def input_reader():
     return h, w, table
 
 
+def hinter(h, w, table):
+    return h + w - 1
+
+
 def solver(h, w, table):
     for k in range(h):
         i, j = k, 0

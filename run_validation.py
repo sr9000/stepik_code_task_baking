@@ -2,8 +2,8 @@ import logging as log
 
 from extra.introspection import collect_datasets, collect_wrong_solutions
 from implementation.checker import output_reader, checker as check
-from implementation.solver import input_reader, solver as solve
-from pre_definition.solve_caller import call_solve
+from implementation.solver import input_reader, solver as solve, hinter as get_hint
+from pre_definition.solve_caller import call_with_args
 from pre_definition.stdio import stdio
 
 
@@ -101,7 +101,7 @@ def assert_solutions(readed_ds, readed_sl, answered_sl=None):
     first_error = None
     first_full_name = ''
 
-    for (full_name1, indata), (full_name2, outdata), (full_name3, ansdata) in zip(readed_ds, readed_sl, answered_sl):
+    for (full_name1, indata, _), (full_name2, outdata), (full_name3, ansdata) in zip(readed_ds, readed_sl, answered_sl):
         assert full_name1 == full_name2, f'Checking solutions on different names'
         assert full_name1 == full_name3, f'Checking solutions on different names'
         try:
@@ -120,24 +120,24 @@ def assert_solutions(readed_ds, readed_sl, answered_sl=None):
 
 
 def reading_solutions(solved_ds, stripping=False):
-    for full_name, sl in solved_ds:
+    for full_name, sl, hint in solved_ds:
         try:
             sl = sl.strip(' ') if stripping else sl
             with stdio(input=sl):
-                output_data = output_reader()
+                output_data = call_with_args(output_reader, hint)
             yield full_name, output_data
         except Exception as e:
             raise ValidationException(f'Failed to read solution {full_name}') from e
 
 
 def solving_datasets(readed_ds, solve_func=solve):
-    for full_name, ds_data in readed_ds:
+    for full_name, ds_data, hint in readed_ds:
         try:
             with stdio(output=True) as cm:
-                call_solve(solve_func, ds_data)
+                call_with_args(solve_func, ds_data)
             r = cm.output_get()
             assert r == r.strip(' '), f'Solution of {full_name} did not pass stripping test'
-            yield full_name, cm.output_get()
+            yield full_name, cm.output_get(), hint
         except Exception as e:
             raise ValidationException(f'Failed to solve dataset {full_name}') from e
 
@@ -149,7 +149,8 @@ def reading_datasets(datasets):
             try:
                 with stdio(input=ds):
                     input_data = input_reader()
-                yield full_name, input_data
+                hint = call_with_args(get_hint, input_data)
+                yield full_name, input_data, hint
             except Exception as e:
                 raise ValidationException(f'Failed to read dataset {full_name}') from e
 

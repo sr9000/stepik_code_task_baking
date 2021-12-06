@@ -2,8 +2,8 @@ import logging as log
 from pathlib import Path
 
 from implementation.checker import output_reader, checker as check
-from implementation.solver import input_reader, solver as solve
-from pre_definition.solve_caller import call_solve
+from implementation.solver import input_reader, solver as solve, hinter as get_hint
+from pre_definition.solve_caller import call_with_args
 from pre_definition.stdio import stdio
 
 
@@ -39,24 +39,31 @@ def check_sample(fin: Path, fout: Path):
         except Exception as e:
             raise Exception(f'Cannot read "{fin.name}"') from e
 
+    # get hint
+    try:
+        hint = call_with_args(get_hint, input)
+    except Exception as e:
+        raise Exception(f'Cannot get hint for "{fin.name}"') from e
+
+
     # read output
     with stdio(input=fout.open()):
         try:
-            expected = output_reader()
+            expected = call_with_args(output_reader, hint)
         except Exception as e:
             raise Exception(f'Cannot read "{fout.name}"') from e
 
     # run solution
     with stdio(output=True) as solution:
         try:
-            call_solve(solve, input)
+            call_with_args(solve, input)
         except Exception as e:
             raise Exception(f'Cannot solve "{input}"') from e
 
     # read solution output
     with stdio(input=solution.output_get()):
         try:
-            answer = output_reader()
+            answer = call_with_args(output_reader, hint)
         except Exception as e:
             raise Exception(f'Cannot read "{fout.name}"') from e
 
