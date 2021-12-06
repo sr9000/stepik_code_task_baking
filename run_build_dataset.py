@@ -3,9 +3,9 @@ from pathlib import Path
 
 from extra.helper import clear_dir
 from extra.introspection import collect_datasets
+from implementation.solver import input_reader, solver as solve
 from pre_definition.solve_caller import call_solve
 from pre_definition.stdio import stdio
-from implementation.solver import input_reader, solver as solve
 
 
 def main():

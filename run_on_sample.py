@@ -1,10 +1,10 @@
 import logging as log
 from pathlib import Path
 
-from pre_definition.solve_caller import call_solve
 from implementation.checker import output_reader, checker as check
-from pre_definition.stdio import stdio
 from implementation.solver import input_reader, solver as solve
+from pre_definition.solve_caller import call_solve
+from pre_definition.stdio import stdio
 
 
 def main():
