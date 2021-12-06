@@ -1,9 +1,150 @@
-import pre_definition.params as params
-import pre_definition.stdio as stdio
-import pytest
 import re
 import sys
 from io import StringIO
+
+import pytest
+
+import pre_definition.params as params
+import pre_definition.stdio as stdio
+
+
+@pytest.mark.parametrize(
+    'data, expected',
+    [((['a'], [1, (2, 3), dict(a=4, b=5)]), (['a'], [1, (2, 3), dict(a=4, b=5)])),
+     ((['a', 'b'], [(1, 1), (2, 3), dict(a=4, b=5)]), (['a', 'b'], [(1, 1), (2, 3), (4, 5)])),
+     ]
+)
+def test_eliminate_dicts(data, expected):
+    res = params.eliminate_dicts(data)
+    assert res == expected
+
+
+def test_eliminate_dicts_exception():
+    m = 'Impossible type error at conversion iters into tuples!'
+    with pytest.raises(AssertionError, match=re.escape(m)):
+        params.eliminate_dicts((['a', 'b'], [(1, 2), [3, 4]]))
+
+
+def test_any2tuple():
+    names = ['a', 'b']
+    f = params.any2tuple(names)
+    assert f((1, 2, 3)) == (1, 2, 3)
+    assert f(dict(b=2, a=1)) == (1, 2)
+
+
+def test_any2tuple_exception():
+    names = ['a', 'b']
+    f = params.any2tuple(names)
+    m = 'Impossible type error at conversion iters into tuples!'
+    with pytest.raises(AssertionError, match=re.escape(m)):
+        f([1, 2])
+
+
+@pytest.mark.parametrize(
+    'data, expected',
+    [((['a'], [1, 2, 3]), True),
+     ((['a', 'b'], [(1, 2), (3, 4)]), True),
+     ((['a', 'b'], [(1, 2), dict(b=3, a=4)]), True),
+     ((['a'], [1, (2, 3), dict(a=1, b=2)]), True),
+     ((['a', 'b'], [(1, 2), (3,)]), False),
+     ((['a', 'b'], [(1, 2), dict(b=3, a=4, c=6)]), False),
+     ]
+)
+def test_is_corresponding_names_to_lists(data, expected):
+    res = params.is_corresponding_names_to_lists(data)
+    assert res == expected
+
+
+def test_is_tuple_len_2():
+    tuple2 = (1, 2)
+    tuple3 = (1, 2, 3)
+    list2 = [1, 2]
+
+    assert params.is_tuple_len_2(tuple2)
+    assert not params.is_tuple_len_2(tuple3)
+    assert not params.is_tuple_len_2(list2)
+
+
+@pytest.mark.parametrize(
+    's, expect',
+    [('a', ['a']),
+     ('a,b', ['a', 'b']),
+     ('abc, def', ['abc', 'def']),
+     ]
+)
+def test_parse_comma_sep_ids(s, expect):
+    res = params.parse_comma_sep_ids(s)
+    assert res == expect
+
+
+def test_is_comma_sep_ids():
+    assert params.is_comma_sep_ids('a')
+    assert params.is_comma_sep_ids('a,b')
+    assert params.is_comma_sep_ids('abc, def')
+    assert not params.is_comma_sep_ids('a,')
+    assert not params.is_comma_sep_ids(', a')
+    assert not params.is_comma_sep_ids('a,,bc')
+    assert not params.is_comma_sep_ids('a-no,b_yes')
+
+
+def test_is_collection():
+    assert params.is_collection([])
+    assert params.is_collection(())
+    assert params.is_collection(set())
+    assert params.is_collection(dict())
+    assert not params.is_collection('')
+
+
+@pytest.mark.parametrize(
+    'data, expected',
+    [([('a', [1])], [(['a'], [1])]),
+     ([('a, b', [(1, 2)])], [(['a', 'b'], [(1, 2)])]),
+     ([('a', [1]), ('b', [2])], [(['a'], [1]), (['b'], [2])]),
+     ([('a', range(2)), ('b', [2])], [(['a'], [0, 1]), (['b'], [2])]),
+     ]
+)
+def test_parse_params(data, expected):
+    res = params.parse_params(data)
+    assert res == expected
+
+
+@pytest.mark.parametrize(
+    'n',
+    range(2, 10)
+)
+def test_is_tuple_len_(n: int):
+    tuplen = tuple(1 for _ in range(n))
+    tuplenminus = tuple(1 for _ in range(n - 1))
+    tuplenplus = tuple(1 for _ in range(n + 1))
+    listn = list(1 for _ in range(n))
+
+    f = params.is_tuple_len_(n)
+
+    assert f(tuplen)
+    assert not f(tuplenminus)
+    assert not f(tuplenplus)
+    assert not f(listn)
+
+
+def test_have_exact_():
+    keys = ['a', 'b']
+    good = {'a': 1, 'b': 2}
+    bad1 = {'a': 1, 'b': 2, 'c': 3}
+    bad2 = {'a': 1, 'c': 2}
+
+    f = params.have_exact_(keys)
+    assert f(good)
+    assert not f(bad1)
+    assert not f(bad2)
+
+
+def test_params_lmap():
+    data = range(4)
+    expect = [0, 2, 4, 6]
+    res = params.lmap(lambda x: x * 2, data)
+
+    assert isinstance(res, list)
+    assert res == expect
 
 
 def test_stdio_stdout_sb():
@@ -366,6 +507,12 @@ def test_params_not_allowed():
     gg = 'Not allowed combination of n=10(positive int) and sample=0.5(proportion)!'
     with pytest.raises(AssertionError, match=re.escape(gg)):
         params.params(ps, n=10, sample=0.5)
+
+
+def test_params_gen_dict():
+    ps = [('a,b', [(1, 2), (2, 3)]), ('c, d, e', [(1, 1, 1), dict(e=2, d=3, c=4)])]
+    r = ['2 1 1 1\n', '2 4 3 2\n', '6 1 1 1\n', '6 4 3 2\n']
+    assert list(params.params(ps)(lambda a, b, c, d, e: print(a * b, c, d, e))()) == r
 
 
 def test_params_gen_all():
