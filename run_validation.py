@@ -35,8 +35,11 @@ def main():
     readed_sl = list(reading_solutions(solved_ds))
     log.info('solutions is readable')
 
+    readed_stripped_sl = list(reading_solutions(solved_ds, stripping=True))
+    log.info('stripped solutions is readable')
+
     # solutions passing check
-    assert_solutions(readed_ds, readed_sl)
+    assert_solutions(readed_ds, readed_sl, readed_stripped_sl)
     log.info('solutions passing check')
 
     log.info('collect wrong solutions')
@@ -116,9 +119,10 @@ def assert_solutions(readed_ds, readed_sl, answered_sl=None):
         raise PartiallyCorrectException(f'Failed to check solution {first_full_name}') from first_error
 
 
-def reading_solutions(solved_ds):
+def reading_solutions(solved_ds, stripping=False):
     for full_name, sl in solved_ds:
         try:
+            sl = sl.strip(' ') if stripping else sl
             with stdio(input=sl):
                 output_data = output_reader()
             yield full_name, output_data
@@ -131,6 +135,8 @@ def solving_datasets(readed_ds, solve_func=solve):
         try:
             with stdio(output=True) as cm:
                 call_solve(solve_func, ds_data)
+            r = cm.output_get()
+            assert r == r.strip(' '), f'Solution of {full_name} did not pass stripping test'
             yield full_name, cm.output_get()
         except Exception as e:
             raise ValidationException(f'Failed to solve dataset {full_name}') from e
