@@ -1,8 +1,8 @@
 import logging as log
 from typing import Callable as ABCCallable
 
-from impl import generator as generators
-from impl import wrong as wrongs
+from implementation import generator as generators
+from implementation import wrong as wrongs
 
 
 def collect_datasets():

@@ -1,5 +1,6 @@
 import ast
 import logging as log
+import sys
 from importlib import import_module
 from inspect import getfile, getmodule
 from itertools import filterfalse
@@ -10,7 +11,7 @@ from typing import Type, Iterable
 from astunparse import unparse
 
 from extra.introspection import collect_datasets
-from impl.private._stdio import stdio
+from pre_definition.stdio import stdio
 
 AST_IMPORTS = [ast.Import, ast.ImportFrom]
 AST_NEW_NAMES = [ast.Assign, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef]
@@ -159,15 +160,17 @@ def assert_clashed_names(enriched):
 
 def main():
     log.basicConfig(level=log.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
-    mdl_caller = Path('extra/solve_caller.py')
-    mdl_tag = Path('impl/private/_tag.py')
-    mdl_stdio = Path('impl/private/_stdio.py')
-    mdl_params = Path('impl/private/_params.py')
+    log.info(f'--- Started: {sys.argv[0]} ---')
 
-    mdl_common = Path('impl/common.py')
-    mdl_checker = Path('impl/checker.py')
-    mdl_generator = Path('impl/generator.py')
-    mdl_solution = Path('impl/solver.py')
+    mdl_caller = Path('pre_definition/solve_caller.py')
+    mdl_tag = Path('pre_definition/tag.py')
+    mdl_stdio = Path('pre_definition/stdio.py')
+    mdl_params = Path('pre_definition/params.py')
+
+    mdl_common = Path('implementation/common.py')
+    mdl_checker = Path('implementation/checker.py')
+    mdl_generator = Path('implementation/generator.py')
+    mdl_solution = Path('implementation/solver.py')
 
     mdl_template = prepare_template()
 

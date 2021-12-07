@@ -1,14 +1,16 @@
 import logging as log
+import sys
 from pathlib import Path
 
-from extra.solve_caller import call_solve
-from impl.checker import output_reader, checker as check
-from impl.private._stdio import stdio
-from impl.solver import input_reader, solver as solve
+from implementation.checker import output_reader, checker as check
+from implementation.solver import input_reader, solver as solve, hinter as get_hint
+from pre_definition.solve_caller import call_with_args
+from pre_definition.stdio import stdio
 
 
 def main():
     log.basicConfig(level=log.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
+    log.info(f'--- Started: {sys.argv[0]} ---')
 
     ins, outs = collect_samples()
 
@@ -29,6 +31,8 @@ def main():
 
     if not has_failed:
         log.info('All samples are passed')
+    else:
+        quit(-1)
 
 
 def check_sample(fin: Path, fout: Path):
@@ -39,24 +43,30 @@ def check_sample(fin: Path, fout: Path):
         except Exception as e:
             raise Exception(f'Cannot read "{fin.name}"') from e
 
+    # get hint
+    try:
+        hint = call_with_args(get_hint, input)
+    except Exception as e:
+        raise Exception(f'Cannot get hint for "{fin.name}"') from e
+
     # read output
     with stdio(input=fout.open()):
         try:
-            expected = output_reader()
+            expected = call_with_args(output_reader, hint)
         except Exception as e:
             raise Exception(f'Cannot read "{fout.name}"') from e
 
     # run solution
     with stdio(output=True) as solution:
         try:
-            call_solve(solve, input)
+            call_with_args(solve, input)
         except Exception as e:
             raise Exception(f'Cannot solve "{input}"') from e
 
     # read solution output
     with stdio(input=solution.output_get()):
         try:
-            answer = output_reader()
+            answer = call_with_args(output_reader, hint)
         except Exception as e:
             raise Exception(f'Cannot read "{fout.name}"') from e
 
@@ -78,7 +88,7 @@ def match_samples(ins, outs):
 def collect_samples():
     ins = dict()
     outs = dict()
-    for f in Path('sample').iterdir():
+    for f in Path('implementation/sample').iterdir():
         if not f.is_file():
             continue
         if f.match('*.in'):
