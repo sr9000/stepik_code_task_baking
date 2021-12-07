@@ -1,4 +1,5 @@
 import logging as log
+import sys
 
 from extra.introspection import collect_datasets, collect_wrong_solutions
 from implementation.checker import output_reader, checker as check
@@ -20,6 +21,8 @@ class PartiallyCorrectException(ValidationException):
 
 
 def main():
+    log.info(f'--- Started: {sys.argv[0]} ---')
+
     log.info('collect_datasets')
     datasets = collect_datasets()
 

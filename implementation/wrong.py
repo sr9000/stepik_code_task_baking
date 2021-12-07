@@ -2,6 +2,10 @@ from pre_definition.tag import wrong
 
 
 @wrong
-def repeat(h, w, table):
-    for i in range(h + w - 1):
-        print(*table[i % len(table)])
+def plus1(n):
+    print(n + 1)
+
+
+@wrong
+def noway(n):
+    print(n)

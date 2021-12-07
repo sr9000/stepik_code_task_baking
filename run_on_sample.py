@@ -1,4 +1,5 @@
 import logging as log
+import sys
 from pathlib import Path
 
 from implementation.checker import output_reader, checker as check
@@ -9,6 +10,7 @@ from pre_definition.stdio import stdio
 
 def main():
     log.basicConfig(level=log.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
+    log.info(f'--- Started: {sys.argv[0]} ---')
 
     ins, outs = collect_samples()
 
@@ -29,6 +31,8 @@ def main():
 
     if not has_failed:
         log.info('All samples are passed')
+    else:
+        quit(-1)
 
 
 def check_sample(fin: Path, fout: Path):
@@ -44,7 +48,6 @@ def check_sample(fin: Path, fout: Path):
         hint = call_with_args(get_hint, input)
     except Exception as e:
         raise Exception(f'Cannot get hint for "{fin.name}"') from e
-
 
     # read output
     with stdio(input=fout.open()):

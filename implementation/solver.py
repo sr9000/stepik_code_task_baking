@@ -1,27 +1,25 @@
+from itertools import product
+
+
 def input_reader():
-    h, w = map(int, input().split())
-    table = [input().split() for _ in range(h)]
-    return h, w, table
+    return int(input())
 
 
-def hinter(h, w, table):
-    return h + w - 1
+def hinter(*args, **kwargs):
+    pass
 
 
-def solver(h, w, table):
-    for k in range(h):
-        i, j = k, 0
-        s = ''
-        while i >= 0 and j < w:
-            s += table[i][j]
-            i -= 1
-            j += 1
-        print('_' * (h - k - 1) + ' '.join(s))
-    for k in range(1, w):
-        i, j = h - 1, k
-        s = ''
-        while i >= 0 and j < w:
-            s += table[i][j]
-            i -= 1
-            j += 1
-        print('_' * k + ' '.join(s))
+def solver(n):
+    b, w = 1, 0
+    for _ in range(n):
+        b, w = w, b + w
+    print(2 * b + w)
+
+# def solver_slow(n):
+#     template = [(0, 1)] * n
+#     k = 0
+#     for s in product(*template):
+#         s = list(s)
+#         if (s[0], s[-1]) != (0,0) and (0,0) not in zip(s[1:], s[:-1]):
+#             k += 1
+#     print(k)

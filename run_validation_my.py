@@ -1,4 +1,5 @@
 import logging as log
+import sys
 
 from extra.introspection import collect_datasets
 from implementation.solver import solver, input_reader
@@ -8,6 +9,7 @@ from pre_definition.stdio import stdio
 
 
 def main():
+    log.info(f'--- Started: {sys.argv[0]} ---')
     log.info('check datasets')
     datasets = collect_datasets()
     dss = []

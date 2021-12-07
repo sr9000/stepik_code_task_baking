@@ -1,5 +1,5 @@
-def output_reader(hint):
-    return [input() for _ in range(hint)]
+def output_reader(*args, **kwargs):
+    return int(input())
 
 
 def checker(input, expected, result):

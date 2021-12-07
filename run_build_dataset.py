@@ -1,4 +1,5 @@
 import logging as log
+import sys
 from pathlib import Path
 
 from extra.helper import clear_dir
@@ -10,6 +11,7 @@ from pre_definition.stdio import stdio
 
 def main():
     log.basicConfig(level=log.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
+    log.info(f'--- Started: {sys.argv[0]} ---')
 
     datasets = collect_datasets()
     dsnowidth = len(str(len(datasets)))

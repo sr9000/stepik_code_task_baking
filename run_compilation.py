@@ -1,5 +1,6 @@
 import ast
 import logging as log
+import sys
 from importlib import import_module
 from inspect import getfile, getmodule
 from itertools import filterfalse
@@ -159,6 +160,8 @@ def assert_clashed_names(enriched):
 
 def main():
     log.basicConfig(level=log.INFO, format='%(asctime)s | %(levelname)s | %(message)s')
+    log.info(f'--- Started: {sys.argv[0]} ---')
+
     mdl_caller = Path('pre_definition/solve_caller.py')
     mdl_tag = Path('pre_definition/tag.py')
     mdl_stdio = Path('pre_definition/stdio.py')
