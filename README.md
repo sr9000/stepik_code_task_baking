@@ -4,4 +4,4 @@ Command line utilities to prepare my.py file and tests for programming task on S
 
 `implementation` folder contains parts of programming task, including tests-generator, author-solution and checker for students solutions.
 
-`run_compilation.py` produces `my.py` file, that cen be used on Stepik platform to check students solutions/
+`run_compilation.py` produces `my.py` file, that can be used on Stepik platform to check students solutions/
